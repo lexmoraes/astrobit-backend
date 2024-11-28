@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'api_astrobit',
 ]
@@ -150,5 +151,18 @@ CORS_ALLOW_ALL_ORIGINS = True
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=90),  # Tempo de vida do token de acesso
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Tempo de vida do token de refresh
+    'ROTATE_REFRESH_TOKENS': True,  # Geração de novos tokens de refresh
+    'BLACKLIST_AFTER_ROTATION': True,  # Adiciona tokens rotacionados na blacklist
+    'ALGORITHM': 'HS256',  # Algoritmo utilizado para assinar o token
+    'SIGNING_KEY': 'your_secret_key_here',  # Chave secreta para assinar os tokens
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
 
 AUTH_USER_MODEL = 'api_astrobit.CustomUser'
