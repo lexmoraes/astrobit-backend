@@ -9,19 +9,19 @@ class CostumeUserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['id', 'email', 'username']
 
-class SignUpSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.ModelSerializer):
     """
     Serializador para registrar novos usuários.
     """
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'username', 'password']
+        fields = ['email', 'username', 'password']  # Campos a serem enviados pelo cliente
 
     def create(self, validated_data):
         """
-        Cria um novo usuário utilizando o gerenciador.
+        Cria um novo usuário com os dados validados.
         """
         user = CustomUser.objects.create_user(
             email=validated_data['email'],

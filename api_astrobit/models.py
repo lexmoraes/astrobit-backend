@@ -37,11 +37,22 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser, ModelBase, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150, unique=True)
+    name = models.CharField(max_length=255, default="")
+    password = models.CharField(max_length=255)
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    # Define o campo utilizado como identificador único (username)
+    USERNAME_FIELD = 'username'
+    # REQUIRED_FIELDS deve incluir todos os campos obrigatórios ao criar um superusuário, exceto o USERNAME_FIELD e o password
+    REQUIRED_FIELDS = ['email']
 
     def __str__(self):
-        return self.email
+        return self.username
+
+
+class Cards(models.Model, CustomUser):
+    name = models.CharField(max_length=255)
+    tamb = models.ImageField()
+    description = models.TextField()
+    link = models.URLField()
