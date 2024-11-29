@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import RegisterSerializer, CostumeUserSerializer
 
 
 class RegisterAPIView(APIView):
@@ -13,6 +13,7 @@ class RegisterAPIView(APIView):
     """
 
     def post(self, request):
+
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()  # Criação do usuário
@@ -21,7 +22,7 @@ class RegisterAPIView(APIView):
 
             # Retorna os tokens e os dados do usuário
             return Response({
-                'user': UserSerializer(user).data,
+                'user': CostumeUserSerializer(user).data,
                 'access': str(access_token),  # Retorna o token de acesso
                 'refresh': str(refresh)  # Retorna o refresh token
             }, status=status.HTTP_201_CREATED)

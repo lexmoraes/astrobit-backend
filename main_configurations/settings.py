@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -44,7 +45,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt',
     'corsheaders',
     'api_astrobit',
 ]
@@ -144,25 +145,33 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',  # Permissões padrão
     ],
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_METHODS = {'POST', 'GET', 'OPTIONS', 'PATCH', 'PUT', 'DELETE'}
+
+CORS_ALLOW_HEADERS = ['*']
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=90),  # Tempo de vida do token de acesso
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Tempo de vida do token de refresh
-    'ROTATE_REFRESH_TOKENS': True,  # Geração de novos tokens de refresh
-    'BLACKLIST_AFTER_ROTATION': True,  # Adiciona tokens rotacionados na blacklist
-    'ALGORITHM': 'HS256',  # Algoritmo utilizado para assinar o token
-    'SIGNING_KEY': 'your_secret_key_here',  # Chave secreta para assinar os tokens
-    'VERIFYING_KEY': None,
-    'AUDIENCE': None,
-    'ISSUER': None,
-    'BLACKLIST_AFTER_ROTATION': True,
-}
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=90),  # Tempo de vida do token de acesso
+#     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Tempo de vida do token de refresh
+#     'ROTATE_REFRESH_TOKENS': True,  # Geração de novos tokens de refresh
+#     'BLACKLIST_AFTER_ROTATION': True,  # Adiciona tokens rotacionados na blacklist
+#     'ALGORITHM': 'HS256',  # Algoritmo utilizado para assinar o token
+#     'SIGNING_KEY': 'your_secret_key_here',  # Chave secreta para assinar os tokens
+#     'VERIFYING_KEY': None,
+#     'AUDIENCE': None,
+#     'ISSUER': None,
+# }
 
 AUTH_USER_MODEL = 'api_astrobit.CustomUser'
