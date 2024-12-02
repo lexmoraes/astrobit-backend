@@ -1,5 +1,7 @@
+import django_filters
 from django_filters import rest_framework as filters
-from api_astrobit.models import CustomUser, GameCardData
+from api_astrobit.models import CustomUser, GameCardData, RankUser
+
 
 class CustomUserFilter(filters.FilterSet):
     """
@@ -26,3 +28,13 @@ class GameCardDataFilter(filters.FilterSet):
     class Meta:
         model = GameCardData
         fields = ['game_title', 'author', 'created_at', 'active']  # Campos disponíveis para filtragem
+
+
+class RankUserFilter(django_filters.FilterSet):
+    placement = django_filters.NumberFilter(field_name='placement', lookup_expr='exact')
+    username = django_filters.CharFilter(field_name='username__username', lookup_expr='icontains')
+    score = django_filters.NumberFilter(field_name='score', lookup_expr='gte')
+
+    class Meta:
+        model = RankUser
+        fields = ['placement', 'username', 'score']

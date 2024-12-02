@@ -52,7 +52,15 @@ class CustomUser(AbstractUser, ModelBase, PermissionsMixin):
         return self.username
 
 
-#class Ranking
+class RankUser(ModelBase):
+    placement = models.PositiveIntegerField(default=0)
+    username = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE
+    )
+    score = models.PositiveIntegerField(default=0)
+    photo_user = models.ImageField(default='None', upload_to='photos')
+
+
 
 
 class GameCardData(ModelBase):

@@ -1,10 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.viewsets import ModelViewSet
 
 from api_astrobit.filters import CustomUserFilter, GameCardDataFilter
-from api_astrobit.models import CustomUser, GameCardData
-from api_astrobit.serializers import CustomUserSerializer, GameCardDataSerializer
+from api_astrobit.models import CustomUser, GameCardData, RankUser
+from api_astrobit.serializers import CustomUserSerializer, GameCardDataSerializer, RankUserSerializer
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -36,3 +37,8 @@ class GameCardDataViewSet(viewsets.ModelViewSet):
         if self.request.user.is_authenticated:
             return GameCardData.objects.filter(author=self.request.user)
         return GameCardData.objects.all()
+
+
+class RankUserViewSet(ModelViewSet):
+    queryset = RankUser.objects.all()
+    serializer_class = RankUserSerializer

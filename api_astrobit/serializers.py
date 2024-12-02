@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import CustomUser, GameCardData
+from .models import CustomUser, GameCardData, RankUser
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -56,3 +56,9 @@ class GameCardDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameCardData
         fields = ['id', 'game_title', 'author', 'description', 'link', 'image']
+
+
+class RankUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RankUser
+        fields = ['id', 'placement', 'username', 'score', 'photo_user']

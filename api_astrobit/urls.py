@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from api_astrobit.views import CustomTokenObtainPairView, RegisterUserView, LoginUserView, LogoutUserView, \
-    GameCardDataView
+    GameCardDataView, RankUserListView
 from api_astrobit.viewset import CustomUserViewSet
 
 router = DefaultRouter()
@@ -20,4 +20,5 @@ urlpatterns = [
     path('api/logout/', LogoutUserView.as_view(), name='logout-user'),  # Logout via API (no lado do cliente)
     path('gamecards/', GameCardDataView.as_view(), name='gamecard-list-create'),
     path('gamecards/<int:pk>/', GameCardDataView.as_view(), name='gamecard-detail'),
+    path('rankusers/', RankUserListView.as_view(), name='rankuser-list'),
 ]
