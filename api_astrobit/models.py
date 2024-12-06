@@ -60,7 +60,8 @@ class RankUser(ModelBase):
     score = models.PositiveIntegerField(default=0)
     photo_user = models.ImageField(default='None', upload_to='photos')
 
-
+    def __str__(self):
+        return self.username.username
 
 
 class GameCardData(ModelBase):
@@ -68,7 +69,7 @@ class GameCardData(ModelBase):
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     description = models.CharField(max_length=255)
     link = models.URLField(max_length=150)
-    image = models.ImageField()
+    image = models.URLField(max_length=200)
 
     def __str__(self):
         return self.game_title

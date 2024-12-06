@@ -147,11 +147,7 @@ REST_FRAMEWORK = {
     )
 }
 
-CORS_ALLOW_CREDENTIALS = True
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",
-]
+CORS_ALL_ORIGINS = True
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
