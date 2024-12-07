@@ -1,3 +1,10 @@
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,7 +13,8 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import GameCardData, RankUser
-from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer, GameCardDataSerializer, RankUserSerializer
+from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer, GameCardDataSerializer, \
+    RankUserSerializer, PasswordResetRequestSerializer, PasswordResetSerializer
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -55,6 +63,50 @@ class LogoutUserView(APIView):
     def post(self, request):
         request.user.auth_token.delete()  # Deleta o token associado ao usuário
         return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
+
+
+class PasswordResetRequestView(APIView):
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            user = User.objects.get(email=email)
+            token_generator = PasswordResetTokenGenerator()
+            token = token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_url = request.build_absolute_uri(
+                reverse('password-reset-confirm', kwargs={'uidb64': uid, 'token': token})
+            )
+
+            send_mail(
+                'Redefinição de Senha',
+                f'Use este link para redefinir sua senha: {reset_url}',
+                'seu_email@dominio.com',
+                [email],
+                fail_silently=False,
+            )
+            return Response({"message": "E-mail de redefinição enviado com sucesso."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordResetConfirmView(APIView):
+    def post(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            raise ValidationError("Token inválido ou expirado.")
+
+        token_generator = PasswordResetTokenGenerator()
+        if not token_generator.check_token(user, token):
+            raise ValidationError("Token inválido ou expirado.")
+
+        serializer = PasswordResetSerializer(data=request.data)
+        if serializer.is_valid():
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({"message": "Senha redefinida com sucesso."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GameCardDataView(APIView):

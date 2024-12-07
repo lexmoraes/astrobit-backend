@@ -1,6 +1,20 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, RankUser, GameCardData
+
+
+class PasswordResetForm(forms.Form):
+    new_password = forms.CharField(widget=forms.PasswordInput, min_length=8)
+
+    @admin.action(description="Redefinir senha dos usuários selecionados")
+    def reset_password(modeladmin, request, queryset):
+        form = PasswordResetForm(request.POST or None)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
+            for user in queryset:
+                user.set_password(new_password)
+                user.save()
 
 
 class CustomUserAdmin(UserAdmin):
@@ -17,7 +31,8 @@ class CustomUserAdmin(UserAdmin):
             'classes': ('wide',),
             'fields': ('email', 'username', 'password1', 'password2')}
         ),
-    )
+    ),
+    actions = ['reset_password']
 
 
 # Registro do modelo RankUser
