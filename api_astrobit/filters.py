@@ -23,11 +23,10 @@ class GameCardDataFilter(filters.FilterSet):
     game_title = filters.CharFilter(lookup_expr='icontains')  # Busca parcial por título do jogo
     author = filters.CharFilter(field_name='author__username', lookup_expr='icontains')  # Filtra pelo username do autor
     created_at = filters.DateFromToRangeFilter()  # Filtra por intervalo de datas de criação
-    active = filters.BooleanFilter()  # Filtra por jogos ativos/inativos
 
     class Meta:
         model = GameCardData
-        fields = ['game_title', 'author', 'created_at', 'active']  # Campos disponíveis para filtragem
+        fields = ['game_title', 'author', 'created_at']  # Campos disponíveis para filtragem
 
 
 class RankUserFilter(django_filters.FilterSet):
