@@ -24,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ['email', 'username']
     ordering = ['email']
     fieldsets = (
-        (None, {'fields': ('email', 'username', 'password')}),
+        (None, {'fields': ('email', 'username', 'password', 'profile_image_url')}),
     )
     add_fieldsets = (
         (None, {

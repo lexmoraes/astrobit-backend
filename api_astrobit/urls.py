@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from api_astrobit.views import CustomTokenObtainPairView, RegisterUserView, LoginUserView, LogoutUserView, \
-    GameCardDataView, RankUserListView
+    GameCardDataView, RankUserListView, CustomUserUpdateAPIView
 from api_astrobit.viewset import CustomUserViewSet, GameCardDataViewSet
 
 router = DefaultRouter()
@@ -22,4 +22,5 @@ urlpatterns = [
     path('gamecards/', GameCardDataView.as_view(), name='gamecard-create'),
     path('gamecards/<int:pk>/', GameCardDataView.as_view(), name='gamecard-detail'),
     path('rankusers/', RankUserListView.as_view(), name='rankuser-list'),
+    path('api/user/update/', CustomUserUpdateAPIView.as_view(), name='user-update'),
 ]

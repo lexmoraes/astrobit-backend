@@ -5,16 +5,17 @@ from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework.exceptions import ValidationError
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import GameCardData, RankUser
+from .models import GameCardData, RankUser, CustomUser
 from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer, GameCardDataSerializer, \
-    RankUserSerializer, PasswordResetRequestSerializer, PasswordResetSerializer
+    RankUserSerializer, PasswordResetRequestSerializer, PasswordResetSerializer, CustomUserSerializer
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -31,6 +32,16 @@ class RegisterUserView(APIView):
             return Response({'message': 'User created successfully', 'user': serializer.data},
                             status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomUserUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # Retorna o usuário autenticado
+        return self.request.user
 
 
 class LoginUserView(APIView):
@@ -166,7 +177,7 @@ class GameCardDataView(APIView):
         """
         try:
             game = GameCardData.objects.get(pk=pk)
-            if game.author != request.user:  # Garante que apenas o autor pode deletar
+            if game.username != request.user:  # Garante que apenas o autor pode deletar
                 return Response({'error': 'Permissão negada.'}, status=status.HTTP_403_FORBIDDEN)
             game.delete()
             return Response({'message': 'GameCardData deletado com sucesso'}, status=status.HTTP_204_NO_CONTENT)

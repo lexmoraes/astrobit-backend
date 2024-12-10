@@ -21,7 +21,7 @@ class GameCardDataFilter(filters.FilterSet):
     Filtros para o modelo GameCardData.
     """
     game_title = filters.CharFilter(lookup_expr='icontains')  # Busca parcial por título do jogo
-    author = filters.CharFilter(field_name='author__username', lookup_expr='icontains')  # Filtra pelo username do autor
+    author = filters.CharFilter(field_name='username__username', lookup_expr='icontains')  # Filtra pelo username do autor
     created_at = filters.DateFromToRangeFilter()  # Filtra por intervalo de datas de criação
 
     class Meta:

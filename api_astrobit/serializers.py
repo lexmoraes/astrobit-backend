@@ -10,7 +10,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'name', 'email', 'password']
+        fields = ['profile_image_url', 'username', 'name', 'email']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -56,13 +56,13 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class GameCardDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameCardData
-        fields = ['id', 'game_title', 'author', 'description', 'link', 'image']
+        fields = ['id', 'game_title', 'username', 'description', 'game_image_url']
 
 
 class RankUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = RankUser
-        fields = ['id', 'placement', 'username', 'score', 'photo_user']
+        fields = ['id', 'placement', 'username', 'score', 'profile_image_url']
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
