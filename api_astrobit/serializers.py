@@ -56,13 +56,13 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class GameCardDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameCardData
-        fields = ['id', 'game_title', 'username', 'description', 'game_image_url']
+        fields = ['id', 'game_title', 'author_name', 'description', 'game_image_url', 'link']
 
 
 class RankUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = RankUser
-        fields = ['id', 'placement', 'username', 'score', 'profile_image_url']
+        fields = ['id', 'position', 'player', 'score', 'profile_image_url']
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
