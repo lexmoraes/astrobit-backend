@@ -148,7 +148,7 @@ class GameCardDataView(APIView):
         """
         serializer = GameCardDataSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(author=request.user)  # Define o usuário autenticado como autor
+            serializer.save(username=request.user)  # Define o usuário autenticado como autor
             return Response({'message': 'GameCardData criado com sucesso', 'data': serializer.data},
                             status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -159,7 +159,7 @@ class GameCardDataView(APIView):
         """
         try:
             game = GameCardData.objects.get(pk=pk)
-            if game.author != request.user:  # Garante que apenas o autor pode editar
+            if game.username != request.user:  # Garante que apenas o autor pode editar
                 return Response({'error': 'Permissão negada.'}, status=status.HTTP_403_FORBIDDEN)
         except GameCardData.DoesNotExist:
             return Response({'error': 'GameCardData não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
