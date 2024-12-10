@@ -1,20 +1,23 @@
+from urllib.parse import urlparse
+
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
-import requests
 from django.db import models
+import validators
 
 
 # Valida se o link possue extensão de imagem
 def validate_image_url(value):
-    try:
-        response = requests.get(value, stream=True, timeout=5)
-        if response.status_code != 200:
-            raise ValidationError("A URL da imagem não é válida.")
-    except requests.exceptions.Timeout:
-        raise ValidationError("A requisição para a URL da imagem excedeu o tempo limite.")
-    except requests.exceptions.RequestException as e:
-        raise ValidationError(f"Ocorreu um erro na requisição: {str(e)}")
+    # Verifica se é uma URL válida
+    if not validators.url(value):
+        raise ValidationError(f"'{value}' não é uma URL válida.")
+
+    # Verifica se a URL possui extensão de arquivo de imagem
+    valid_image_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp')
+    parsed_url = urlparse(value)
+    if not parsed_url.path.lower().endswith(valid_image_extensions):
+        raise ValidationError(f"A URL '{value}' não aponta para um arquivo de imagem válido.")
 
 
 class ModelBase(models.Model):
@@ -79,28 +82,33 @@ class CustomUser(AbstractUser, ModelBase, PermissionsMixin):
 
 
 class RankUser(ModelBase):
-    placement = models.PositiveIntegerField(default=0)
-    username = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="rank_user_username"
+    position = models.PositiveIntegerField(default=0)
+    player = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name="rank_user_author"
     )
     profile_image_url = models.URLField(
-        max_length=500, blank=True, null=True, validators=[validate_image_url]
+        max_length=500,
+        blank=True,
+        null=True,
+        validators=[validate_image_url]
     )
     score = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
         # Preenche profile_image_url com a URL do perfil do CustomUser associado
-        if self.username:
-            self.profile_image_url = self.username.profile_image_url
+        if self.player:
+            self.profile_image_url = self.player.profile_image_url
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.username.username} - {self.placement} - {self.score}"
+        return f"{self.player.username} - {self.position} - {self.score}"
 
 
 class GameCardData(ModelBase):
-    game_title = models.CharField(max_length=50)
-    username = models.CharField()
+    game_title = models.CharField(max_length=15)
+    author_name = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name="rank_user_username"
+    )
     description = models.CharField(max_length=255)
     game_image_url = models.URLField(
         max_length=500,
@@ -111,11 +119,14 @@ class GameCardData(ModelBase):
         verbose_name="Gamecard Image URL",
         help_text="Insira o link de uma imagem para o gamecard."
     )
+    link = models.URLField(
+        help_text="Insira o link do jogo."
+    )
 
     def save(self, *args, **kwargs):
         # Preenche 'username' com o valor de 'CustomUser.username' caso o 'username' ainda não tenha sido fornecido
-        if self.username and isinstance(self.username, CustomUser):
-            self.username = self.username.username  # Atribui o nome de usuário de CustomUser ao campo username
+        if self.author_name and isinstance(self.author_name, CustomUser):
+            self.username = self.author_name.username  # Atribui o nome de usuário de CustomUser ao campo username
         super().save(*args, **kwargs)
 
     def __str__(self):
