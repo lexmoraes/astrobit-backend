@@ -17,32 +17,22 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
 
 class GameCardDataViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet para gerenciar as operações CRUD de GameCardData.
-    """
-
     queryset = GameCardData.objects.all()
     serializer_class = GameCardDataSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_class = GameCardDataFilter
     search_fields = ['game_title', 'description', 'author__username']
     ordering_fields = ['game_title', 'author', 'id']
 
+    def perform_create(self, serializer):
+        # Definir o autor como o usuário autenticado
+        serializer.save(author=self.request.user)
 
-def perform_create(self, serializer):
-    """
-    Sobrescreve o método para definir o autor como o usuário autenticado.
-    """
-    serializer.save(author=self.request.user)
-
-
-def get_queryset(self):
-    """
-    Sobrescreve o queryset para filtrar por autor autenticado (opcional).
-    """
-    if self.request.user.is_authenticated:
-        return GameCardData.objects.filter(author=self.request.user)
-    return GameCardData.objects.all()
+    def get_queryset(self):
+        # Filtrar apenas por jogos do usuário autenticado, se necessário
+        if self.action == "list" and self.request.user.is_authenticated:
+            return GameCardData.objects.filter(author=self.request.user)
+        return super().get_queryset()
 
 
 class RankUserViewSet(ModelViewSet):

@@ -21,7 +21,7 @@ class GameCardDataFilter(filters.FilterSet):
     Filtros para o modelo GameCardData.
     """
     game_title = filters.CharFilter(lookup_expr='icontains')  # Busca parcial por título do jogo
-    author = filters.CharFilter(field_name='username__username', lookup_expr='icontains')  # Filtra pelo username do autor
+    author = filters.CharFilter(field_name='author_name__username', lookup_expr='icontains')  # Filtra pelo username do autor
     created_at = filters.DateFromToRangeFilter()  # Filtra por intervalo de datas de criação
 
     class Meta:
@@ -30,10 +30,9 @@ class GameCardDataFilter(filters.FilterSet):
 
 
 class RankUserFilter(django_filters.FilterSet):
-    placement = django_filters.NumberFilter(field_name='placement', lookup_expr='exact')
-    username = django_filters.CharFilter(field_name='username__username', lookup_expr='icontains')
+    player = django_filters.CharFilter(field_name='player__username', lookup_expr='icontains')
     score = django_filters.NumberFilter(field_name='score', lookup_expr='gte')
 
     class Meta:
         model = RankUser
-        fields = ['placement', 'username', 'score']
+        fields = ['player', 'score']

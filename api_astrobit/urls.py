@@ -1,26 +1,70 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from api_astrobit.views import (
+    CustomTokenObtainPairView,
+    RegisterUserView,
+    LoginUserView,
+    LogoutUserView,
+    PasswordResetRequestView,
+    PasswordResetConfirmView
+)
+from api_astrobit.viewset import CustomUserViewSet, GameCardDataViewSet, RankUserViewSet
 
-from api_astrobit.views import CustomTokenObtainPairView, RegisterUserView, LoginUserView, LogoutUserView, \
-    GameCardDataView, RankUserListView, CustomUserUpdateAPIView
-from api_astrobit.viewset import CustomUserViewSet, GameCardDataViewSet
-
+# Configurando o roteador do DRF
 router = DefaultRouter()
-router.register(r'users', CustomUserViewSet)
-router.register(r'game-cards', GameCardDataViewSet, basename='gamecarddata')
+router.register(
+    r'users',
+    CustomUserViewSet,
+    basename='user'
+)
+
+router.register(
+    r'game-cards',
+    GameCardDataViewSet,
+    basename='gamecard'
+)
+
+router.register(
+    r'rank-users',
+    RankUserViewSet,
+    basename='rankuser'
+)
+
+router.register(
+    r'register-users',
+    RegisterUserView,
+    basename='registeruser'
+)
 
 urlpatterns = [
-    # URLs de API com o roteador
-    path('api/', include(router.urls)),
+    # Rotas gerenciadas pelo router
+    path('api/',
+         include(router.urls)),
 
-    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # Endpoints customizados
+    path('api/token/',
+         CustomTokenObtainPairView.as_view(),
+         name='token_obtain_pair'),
 
-    # Endpoints da API para login, registro e logout
-    path('api/register/', RegisterUserView.as_view(), name='user-register'),  # Registro de usuário via API
-    path('api/login/', LoginUserView.as_view(), name='login-user'),  # Login de usuário via API
-    path('api/logout/', LogoutUserView.as_view(), name='logout-user'),  # Logout via API (no lado do cliente)
-    path('gamecards/', GameCardDataView.as_view(), name='gamecard-create'),
-    path('gamecards/<int:pk>/', GameCardDataView.as_view(), name='gamecard-detail'),
-    path('rankusers/', RankUserListView.as_view(), name='rankuser-list'),
-    path('api/user/update/', CustomUserUpdateAPIView.as_view(), name='user-update'),
+    path('api/register/',
+         RegisterUserView.as_view(),
+         name='signup'),
+
+    path('api/login/',
+         LoginUserView.as_view(),
+         name='login'),
+
+    path('api/logout/',
+         LogoutUserView.as_view(),
+         name='logout'),
+
+    # Reset de senha
+    path('api/password-reset/',
+         PasswordResetRequestView.as_view(),
+         name='password_reset'),
+
+    path('api/password-reset-confirm/<str:uidb64>/<str:token>/',
+         PasswordResetConfirmView.as_view(),
+         name='password_reset_confirm'
+    ),
 ]

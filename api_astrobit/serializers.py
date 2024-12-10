@@ -10,7 +10,11 @@ class CustomUserSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = CustomUser
-        fields = ['profile_image_url', 'username', 'name', 'email']
+        fields = [
+            'username',
+            'name',
+            'email'
+        ]
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -24,7 +28,12 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['name', 'username', 'password', 'email']
+        fields = [
+            'name',
+                  'username',
+                  'password',
+                  'email'
+        ]
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -56,13 +65,24 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class GameCardDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameCardData
-        fields = ['id', 'game_title', 'author_name', 'description', 'game_image_url', 'link']
+        fields = [
+            'id',
+            'game_title',
+            'author_name',
+            'description',
+            'link',
+        ]
 
 
 class RankUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = RankUser
-        fields = ['id', 'position', 'player', 'score', 'profile_image_url']
+        fields = [
+            'id',
+            'player',
+            'score',
+            'modified_at'
+        ]
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
@@ -70,7 +90,9 @@ class PasswordResetRequestSerializer(serializers.Serializer):
 
     def validate_email(self, value):
         if not User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Nenhum usuário associado a este e-mail.")
+            raise serializers.ValidationError(
+                "Nenhum usuário associado a este e-mail."
+            )
         return value
 
 
@@ -80,5 +102,7 @@ class PasswordResetSerializer(serializers.Serializer):
 
     def validate(self, data):
         if data['new_password'] != data['confirm_password']:
-            raise serializers.ValidationError("As senhas não coincidem.")
+            raise serializers.ValidationError(
+                "As senhas não coincidem."
+            )
         return data
