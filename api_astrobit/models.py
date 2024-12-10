@@ -86,7 +86,7 @@ class RankUser(ModelBase):
 
 
     def __str__(self):
-        return self.username.username
+        return self.username.username, self.placement, self.score
 
 
 class GameCardData(ModelBase):
