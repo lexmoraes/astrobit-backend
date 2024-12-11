@@ -1,9 +1,6 @@
-from urllib.parse import urlparse
-
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from django.core.validators import MinLengthValidator
 from django.db import models
-
 
 
 class ModelBase(models.Model):
@@ -36,26 +33,15 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError('O email é obrigatório.')
         email = self.normalize_email(email)
-        user = self.model(
-            email=email,
-            username=username,
-            **extra_fields)
+        user = self.model(email=email, username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
 
 class CustomUser(AbstractUser, ModelBase, PermissionsMixin):
-    name = models.CharField(
-        db_column='name',
-        max_length=255,
-        blank=False,
-        null=False,
-    )
-    password = models.CharField(
-        max_length=255,
-        blank=False,
-        validators=[
+    name = models.CharField(max_length=255, default="")
+    password = models.CharField(max_length=255, validators=[
         MinLengthValidator(8)
     ])
     email = models.EmailField(unique=True)
@@ -72,33 +58,34 @@ class CustomUser(AbstractUser, ModelBase, PermissionsMixin):
 class RankUser(ModelBase):
     player = models.ForeignKey(
         CustomUser,
-        db_column='player_id',
         on_delete=models.CASCADE,
-        related_name="ranking",
-        null=False,
-        blank=False,
+        related_name="rank_users"
     )
-    score = models.PositiveIntegerField(default=0)
+    score = models.PositiveIntegerField(
+        default=0
+    )
 
     def __str__(self):
-        return self.player.username, self.score
+        return f"{self.player.username} - {self.score}"
 
 
 class GameCardData(ModelBase):
     game_title = models.CharField(
-        max_length=25,
         null=False,
+        max_length=156,
         blank=False,
     )
     author_name = models.ForeignKey(
         CustomUser,
-        db_column='author_id',
         on_delete=models.CASCADE,
         null=False,
-        blank=False,
-        related_name="gamecards"
+        related_name="game_cards"
     )
-    description = models.CharField(max_length=255)
+    description = models.CharField(
+        null=False,
+        blank=False,
+        max_length=255
+    )
     link = models.URLField(
         null=False,
         blank=False,
@@ -106,4 +93,4 @@ class GameCardData(ModelBase):
     )
 
     def __str__(self):
-        return self.game_title, self.author_name.username
+        return self.game_title, self.author_name.username, self.description, self.link

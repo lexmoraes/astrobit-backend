@@ -21,7 +21,7 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ['email', 'username']
     ordering = ['email']
     fieldsets = (
-        (None, {'fields': ('email', 'username', 'password', 'profile_image_url')}),
+        (None, {'fields': ('email', 'username', 'password')}),
     )
     add_fieldsets = (
         (None, {
@@ -59,19 +59,18 @@ class RankUserAdmin(admin.ModelAdmin):
 
     def get_username(self, obj):
         return obj.username.username
-    get_username.short_description = "Ranking"
+    get_username.short_description = "Username"
 
 
 @admin.register(GameCardData)
 class GameCardDataAdmin(admin.ModelAdmin):
     list_display = ('id', 'game_title', 'get_username', 'description', 'created_at')
     search_fields = ['author_name__username', 'game_title']
-    list_filter = ('created_at', 'author_name')
+    list_filter = ('created_at',)
 
     def get_username(self, obj):
         return obj.username  # Ajustado para retornar diretamente a string
-    get_username.short_description = "Gamecard"
+    get_username.short_description = "author_name__username"
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
-
