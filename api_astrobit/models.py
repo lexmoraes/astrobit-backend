@@ -1,5 +1,5 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
-from django.core.validators import MinLengthValidator
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.db import models
 
 
@@ -40,16 +40,28 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser, ModelBase, PermissionsMixin):
-    name = models.CharField(max_length=255, default="")
-    password = models.CharField(max_length=255, validators=[
+    name = models.CharField(
+        max_length=255,
+        blank=False,
+        null=False,
+    )
+    password = models.CharField(
+        max_length=255,
+        validators=[
         MinLengthValidator(8)
-    ])
+        ],
+        blank=False,
+    )
     email = models.EmailField(unique=True)
-    # Define o campo utilizado como identificador único (username)
-    USERNAME_FIELD = 'username'
-    # REQUIRED_FIELDS deve incluir todos os
-    # campos obrigatórios ao criar um superusuário, exceto o USERNAME_FIELD e o password
-    REQUIRED_FIELDS = ['email']
+    username = models.CharField(
+        unique=True,
+        blank=False,
+        null=False,
+        validators=[
+            MinLengthValidator(3),
+            MaxLengthValidator(20)
+        ]
+    )
 
     def __str__(self):
         return self.username
@@ -79,7 +91,7 @@ class GameCardData(ModelBase):
         CustomUser,
         on_delete=models.CASCADE,
         null=False,
-        related_name="game_cards"
+        blank=False,
     )
     description = models.CharField(
         null=False,

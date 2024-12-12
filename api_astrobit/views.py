@@ -29,7 +29,7 @@ class RegisterUserView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            return Response({'message': 'User created successfully', 'user': serializer.data},
+            return Response({'message': 'Usuário criado com sucesso', 'user': serializer.data},
                             status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -77,6 +77,7 @@ class LogoutUserView(APIView):
 
 
 class PasswordResetRequestView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         serializer = PasswordResetRequestSerializer(data=request.data)
         if serializer.is_valid():
@@ -101,6 +102,7 @@ class PasswordResetRequestView(APIView):
 
 
 class PasswordResetConfirmView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, uidb64, token):
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
@@ -159,7 +161,7 @@ class GameCardDataView(APIView):
         """
         try:
             game = GameCardData.objects.get(pk=pk)
-            if game.username != request.user:  # Garante que apenas o autor pode editar
+            if game.author_name != request.user:  # Garante que apenas o autor pode editar
                 return Response({'error': 'Permissão negada.'}, status=status.HTTP_403_FORBIDDEN)
         except GameCardData.DoesNotExist:
             return Response({'error': 'GameCardData não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
@@ -177,7 +179,7 @@ class GameCardDataView(APIView):
         """
         try:
             game = GameCardData.objects.get(pk=pk)
-            if game.username != request.user:  # Garante que apenas o autor pode deletar
+            if game.author_name != request.user:  # Garante que apenas o autor pode deletar
                 return Response({'error': 'Permissão negada.'}, status=status.HTTP_403_FORBIDDEN)
             game.delete()
             return Response({'message': 'GameCardData deletado com sucesso'}, status=status.HTTP_204_NO_CONTENT)

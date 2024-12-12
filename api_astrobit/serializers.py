@@ -56,7 +56,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class GameCardDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameCardData
-        fields = ['id', 'game_title', 'author_name', 'description']
+        fields = ['id', 'created_at', 'game_title', 'author_name', 'description']
 
 
 class RankUserSerializer(serializers.ModelSerializer):
