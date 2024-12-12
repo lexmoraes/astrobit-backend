@@ -21,17 +21,17 @@ class GameCardDataViewSet(viewsets.ModelViewSet):
     serializer_class = GameCardDataSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    search_fields = ['game_title', 'description', 'author_name__username']
-    ordering_fields = ['game_title', 'author_name', 'id']
+    search_fields = ['game_title', 'description', 'author']
+    ordering_fields = ['game_title', 'author', 'id']
 
     def perform_create(self, serializer):
         # Definir o autor como o usuário autenticado
-        serializer.save(author_name=self.request.user)
+        serializer.save(author=self.request.user)
 
     def get_queryset(self):
         # Filtrar apenas por jogos do usuário autenticado, se necessário
         if self.action == "list" and self.request.user.is_authenticated:
-            return GameCardData.objects.filter(author_name=self.request.user)
+            return GameCardData.objects.filter(author=self.request.user)
         return super().get_queryset()
 
 

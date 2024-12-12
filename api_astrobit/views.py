@@ -161,7 +161,7 @@ class GameCardDataView(APIView):
         """
         try:
             game = GameCardData.objects.get(pk=pk)
-            if game.author_name != request.user:  # Garante que apenas o autor pode editar
+            if game.author != request.user:  # Garante que apenas o autor pode editar
                 return Response({'error': 'Permissão negada.'}, status=status.HTTP_403_FORBIDDEN)
         except GameCardData.DoesNotExist:
             return Response({'error': 'GameCardData não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
@@ -179,7 +179,7 @@ class GameCardDataView(APIView):
         """
         try:
             game = GameCardData.objects.get(pk=pk)
-            if game.author_name != request.user:  # Garante que apenas o autor pode deletar
+            if game.author != request.user:  # Garante que apenas o autor pode deletar
                 return Response({'error': 'Permissão negada.'}, status=status.HTTP_403_FORBIDDEN)
             game.delete()
             return Response({'message': 'GameCardData deletado com sucesso'}, status=status.HTTP_204_NO_CONTENT)

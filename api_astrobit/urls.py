@@ -21,7 +21,7 @@ urlpatterns = [
     path('api/logout/', LogoutUserView.as_view(), name='logout'),  # Logout via API
     path('api/reset/', PasswordResetRequestView.as_view(), name='reset-password-request'), # Solicita reset de senha via API
     path('api/confirmreset/', PasswordResetConfirmView.as_view(), name='reset-password-confirm'), # Confirma reset de senha via API
-    path('api/gamecards/', GameCardDataView.as_view(), name='gamecard-create'),
-    path('api/rank/', RankUserListView.as_view(), name='rank-list'),
-    path('api/user/update/', CustomUserUpdateAPIView.as_view(), name='user-update'),
+    path('api/gamecards/', GameCardDataView.as_view(), name='add-game'),
+    path('api/rankusers/', RankUserListView.as_view(), name='ranking'),
+    path('api/profile/', CustomUserUpdateAPIView.as_view(), name='profile'),
     ]

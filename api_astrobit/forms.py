@@ -10,7 +10,7 @@ class UserForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'password', 'profile_image_url')
+        fields = ('username', 'email', 'password')
 
 
 class LoginForm(forms.Form):
