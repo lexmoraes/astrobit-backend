@@ -64,13 +64,8 @@ class RankUserAdmin(admin.ModelAdmin):
 
 @admin.register(GameCardData)
 class GameCardDataAdmin(admin.ModelAdmin):
-    list_display = ('id', 'game_title', 'get_username', 'description', 'created_at')
+    list_display = ('id', 'game_title', 'author_name__username', 'description', 'created_at')
     search_fields = ['author_name__username', 'game_title']
     list_filter = ('created_at',)
-
-    def get_username(self, obj):
-        return obj.username  # Ajustado para retornar diretamente a string
-    get_username.short_description = "author_name__username"
-
 
 admin.site.register(CustomUser, CustomUserAdmin)

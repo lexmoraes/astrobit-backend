@@ -64,7 +64,7 @@ class CustomUser(AbstractUser, ModelBase, PermissionsMixin):
     )
 
     def __str__(self):
-        return self.username
+        return f"{self.username}"
 
 
 class RankUser(ModelBase):
@@ -105,4 +105,4 @@ class GameCardData(ModelBase):
     )
 
     def __str__(self):
-        return self.game_title, self.author_name.username, self.description, self.link
+        return f"{self.game_title} by {self.author_name.username}: {self.description} ({self.link})"
