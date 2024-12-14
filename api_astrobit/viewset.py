@@ -1,40 +1,36 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
 
-from api_astrobit.filters import CustomUserFilter, GameCardDataFilter
-from api_astrobit.models import CustomUser, GameCardData, RankUser
-from api_astrobit.serializers import CustomUserSerializer, GameCardDataSerializer, RankUserSerializer
+from api_astrobit import serializers, models, filters
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
-    queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = CustomUserFilter
+    queryset = models.CustomUser.objects.all()
+    serializer_class = serializers.CustomUserSerializer
+    filterset_class = filters.CustomUserFilter
 
 
 class GameCardDataViewSet(viewsets.ModelViewSet):
-    queryset = GameCardData.objects.all()
-    serializer_class = GameCardDataSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    search_fields = ['game_title', 'description', 'author']
+    queryset = models.GameCardData.objects.all()
+    serializer_class = serializers.GameCardDataSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_class = filters.GameCardDataFilter
     ordering_fields = ['game_title', 'author', 'id']
 
-    def perform_create(self, serializer):
-        # Definir o autor como o usuário autenticado
-        serializer.save(author=self.request.user)
+    def create(self, request, *args, **kwargs):
+        request.data['author'] = request.user
+        return super().create(request, *args, **kwargs)
 
-    def get_queryset(self):
-        # Filtrar apenas por jogos do usuário autenticado, se necessário
-        if self.action == "list" and self.request.user.is_authenticated:
-            return GameCardData.objects.filter(author=self.request.user)
-        return super().get_queryset()
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.author != request.user:
+            raise PermissionDenied("Você não tem permissão para alterar este objeto.")
+
+        request.data['author'] = request.user
+        return self.update(request, *args, **kwargs)
 
 
-class RankUserViewSet(ModelViewSet):
-    queryset = RankUser.objects.all()
-    serializer_class = RankUserSerializer
+class RankUserViewSet(viewsets.ModelViewSet):
+    queryset = models.RankUser.objects.all()
+    serializer_class = serializers.RankUserSerializer

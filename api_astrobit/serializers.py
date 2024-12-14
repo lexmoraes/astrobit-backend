@@ -1,15 +1,16 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import CustomUser, GameCardData, RankUser
+
+from api_astrobit import models
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
     """
     Serializador para retornar informações do usuário.
     """
+
     class Meta:
-        model = CustomUser
+        model = models.CustomUser
         fields = ['username', 'name', 'email']
         extra_kwargs = {
             'password': {'write_only': True}
@@ -17,13 +18,13 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Criação de usuário com senha criptografada
-        user = CustomUser.objects.create_user(validated_data)
+        user = models.CustomUser.objects.create_user(validated_data)
         return user
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
+        model = models.CustomUser
         fields = ['name', 'username', 'password', 'email']
         extra_kwargs = {
             'password': {'write_only': True}
@@ -31,7 +32,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Criação de usuário com senha criptografada
-        user = CustomUser.objects.create_user(
+        user = models.CustomUser.objects.create_user(
             name=validated_data['name'],
             username=validated_data['username'],
             password=validated_data['password'],
@@ -55,13 +56,13 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class GameCardDataSerializer(serializers.ModelSerializer):
     class Meta:
-        model = GameCardData
-        fields = ['id', 'created_at', 'game_title', 'author', 'description']
+        model = models.GameCardData
+        fields = ['id', 'created_at', 'game_title', 'author', 'description', 'link']
 
 
 class RankUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = RankUser
+        model = models.RankUser
         fields = ['id', 'player', 'score']
 
 
@@ -69,7 +70,7 @@ class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
     def validate_email(self, value):
-        if not User.objects.filter(email=value).exists():
+        if not models.CustomUser.objects.filter(email=value).exists():
             raise serializers.ValidationError("Nenhum usuário associado a este e-mail.")
         return value
 

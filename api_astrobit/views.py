@@ -1,21 +1,30 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
 from django.urls import reverse
-from django.utils.encoding import force_bytes
+from django.utils.encoding import force_bytes, smart_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import RetrieveUpdateAPIView
-from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, IsAuthenticated
-from django.contrib.auth import authenticate
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import GameCardData, RankUser, CustomUser
-from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer, GameCardDataSerializer, \
-    RankUserSerializer, PasswordResetRequestSerializer, PasswordResetSerializer, CustomUserSerializer
+from .serializers import (
+    CustomTokenObtainPairSerializer,
+    CustomUserSerializer,
+    GameCardDataSerializer,
+    PasswordResetRequestSerializer,
+    PasswordResetSerializer,
+    RankUserSerializer,
+    RegisterSerializer,
+)
+
+User = get_user_model()  # Garantir uso do modelo de usuário personalizado (CustomUser, se houver)
+
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):

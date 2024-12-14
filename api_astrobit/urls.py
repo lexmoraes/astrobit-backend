@@ -1,27 +1,26 @@
-from django.urls import path, include
+from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from api_astrobit.views import CustomTokenObtainPairView, RegisterUserView, LoginUserView, LogoutUserView, \
-    GameCardDataView, RankUserListView, CustomUserUpdateAPIView, PasswordResetRequestView, PasswordResetConfirmView
-from api_astrobit.viewset import CustomUserViewSet, GameCardDataViewSet
+from api_astrobit import viewset, views
 
 router = DefaultRouter()
-router.register(r'users', CustomUserViewSet)
-router.register(r'game-cards', GameCardDataViewSet, basename='gamecarddata')
+router.register('users', viewset.CustomUserViewSet)
+router.register('game_cards', viewset.GameCardDataViewSet)
+urlpatterns = router.urls
 
 urlpatterns = [
-    # URLs de API com o roteador
-    path('api/', include(router.urls)),
 
-    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
 
     # Endpoints da API para login, registro e logout
-    path('api/register/', RegisterUserView.as_view(), name='register'),  # Registro de usuário via API
-    path('api/login/', LoginUserView.as_view(), name='login'),  # Login de usuário via API
-    path('api/logout/', LogoutUserView.as_view(), name='logout'),  # Logout via API
-    path('api/reset/', PasswordResetRequestView.as_view(), name='reset-password-request'), # Solicita reset de senha via API
-    path('api/confirmreset/', PasswordResetConfirmView.as_view(), name='reset-password-confirm'), # Confirma reset de senha via API
-    path('api/gamecards/', GameCardDataView.as_view(), name='add-game'),
-    path('api/rankusers/', RankUserListView.as_view(), name='ranking'),
-    path('api/profile/', CustomUserUpdateAPIView.as_view(), name='profile'),
-    ]
+    path('register/', views.RegisterUserView.as_view(), name='register'),  # Registro de usuário via API
+    path('login/', views.LoginUserView.as_view(), name='login'),  # Login de usuário via API
+    path('logout/', views.LogoutUserView.as_view(), name='logout'),  # Logout via API
+    path('reset/', views.PasswordResetRequestView.as_view(), name='reset-password-request'),
+    # Solicita reset de senha via API
+    path('confirmreset/', views.PasswordResetConfirmView.as_view(), name='reset-password-confirm'),
+    # Confirma reset de senha via API
+
+]
+
+urlpatterns += router.urls
