@@ -16,10 +16,11 @@ urlpatterns = [
     path('register/', views.RegisterUserView.as_view(), name='register'),  # Registro de usuário via API
     path('login/', views.LoginUserView.as_view(), name='login'),  # Login de usuário via API
     path('logout/', views.LogoutUserView.as_view(), name='logout'),  # Logout via API
-    path('reset/', views.PasswordResetRequestView.as_view(), name='reset-password-request'),
+    path('reset/', views.PasswordResetRequestView.as_view(), name='reset_password_request'),
     # Solicita reset de senha via API
-    path('confirmreset/', views.PasswordResetConfirmView.as_view(), name='reset-password-confirm'),
+    path('confirmreset/', views.PasswordResetConfirmView.as_view(), name='reset_password_confirm'),
     # Confirma reset de senha via API
+    path('users/', views.CustomUserUpdateAPIView.as_view(), name='user_update')
 
 ]
 
