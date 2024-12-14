@@ -6,7 +6,7 @@ from django.utils.encoding import force_bytes, smart_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
-from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, RetrieveDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -43,7 +43,7 @@ class RegisterUserView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CustomUserUpdateAPIView(RetrieveUpdateAPIView):
+class CustomUserUpdateAPIView(RetrieveUpdateAPIView, RetrieveDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [IsAuthenticated]
@@ -54,6 +54,9 @@ class CustomUserUpdateAPIView(RetrieveUpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
 class LoginUserView(APIView):
@@ -132,71 +135,6 @@ class PasswordResetConfirmView(APIView):
             user.save()
             return Response({"message": "Senha redefinida com sucesso."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class GameCardDataView(APIView):
-    """
-    Classe para gerenciar os dados de GameCardData: Listar, Criar, Atualizar e Deletar.
-    """
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Permite leitura sem autenticação, mas exige autenticação para escrita
-
-    def get(self, request, pk=None):
-        """
-        Recupera todos os registros ou um específico (se o pk for fornecido).
-        """
-        if pk:
-            try:
-                game = GameCardData.objects.get(pk=pk)
-                serializer = GameCardDataSerializer(game)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            except GameCardData.DoesNotExist:
-                return Response({'error': 'GameCardData não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
-
-        games = GameCardData.objects.all()
-        serializer = GameCardDataSerializer(games, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def post(self, request):
-        """
-        Cria um novo registro de GameCardData. Apenas usuários autenticados podem criar.
-        """
-        serializer = GameCardDataSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(username=request.user)  # Define o usuário autenticado como autor
-            return Response({'message': 'GameCardData criado com sucesso', 'data': serializer.data},
-                            status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, pk):
-        """
-        Atualiza um registro específico de GameCardData. Apenas o autor pode atualizar.
-        """
-        try:
-            game = GameCardData.objects.get(pk=pk)
-            if game.author != request.user:  # Garante que apenas o autor pode editar
-                return Response({'error': 'Permissão negada.'}, status=status.HTTP_403_FORBIDDEN)
-        except GameCardData.DoesNotExist:
-            return Response({'error': 'GameCardData não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = GameCardDataSerializer(game, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'GameCardData atualizado com sucesso', 'data': serializer.data},
-                            status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        """
-        Deleta um registro específico de GameCardData. Apenas o autor pode deletar.
-        """
-        try:
-            game = GameCardData.objects.get(pk=pk)
-            if game.author != request.user:  # Garante que apenas o autor pode deletar
-                return Response({'error': 'Permissão negada.'}, status=status.HTTP_403_FORBIDDEN)
-            game.delete()
-            return Response({'message': 'GameCardData deletado com sucesso'}, status=status.HTTP_204_NO_CONTENT)
-        except GameCardData.DoesNotExist:
-            return Response({'error': 'GameCardData não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class RankUserListView(APIView):
