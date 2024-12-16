@@ -27,6 +27,10 @@ class ModelBase(models.Model):
         null=False,
     )
 
+    class Meta:
+        abstract = True
+        managed = True
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None, **extra_fields):
@@ -37,6 +41,10 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
+
+    class Meta:
+        managed = True
+        db_table = 'admin'
 
 
 class CustomUser(AbstractUser, ModelBase, PermissionsMixin):
@@ -66,6 +74,10 @@ class CustomUser(AbstractUser, ModelBase, PermissionsMixin):
     def __str__(self):
         return f"{self.username}"
 
+    class Meta:
+        managed = True
+        db_table = 'users'
+
 
 class RankUser(ModelBase):
     player = models.OneToOneField(
@@ -80,6 +92,10 @@ class RankUser(ModelBase):
 
     def __str__(self):
         return f"{self.player} - {self.score}"
+
+    class Meta:
+        managed = True
+        db_table = ('rank')
 
 
 class GameCardData(ModelBase):
@@ -113,3 +129,7 @@ class GameCardData(ModelBase):
 
     def __str__(self):
         return f"{self.game_title} by {self.author}: {self.description} ({self.link})"
+
+    class Meta:
+        managed = True
+        db_table = 'game'

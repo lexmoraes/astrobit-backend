@@ -31,6 +31,7 @@ class GameCardDataFilter(filters.FilterSet):
 
 class RankUserFilter(django_filters.FilterSet):
     score = django_filters.NumberFilter(field_name='score', lookup_expr='gte')
+    player = django_filters.CharFilter(field_name='player__username', lookup_expr='icontains')
 
     class Meta:
         model = RankUser

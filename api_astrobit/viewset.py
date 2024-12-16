@@ -143,59 +143,40 @@ class GameCardDataViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GameCardDataSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_class = filters.GameCardDataFilter
-    ordering_fields = ['game_title', 'author', 'id']
 
-    def create(self, request, *args, **kwargs):
-        request.data['author'] = request.user
-        return super().create(request, *args, **kwargs)
+    # def create(self, request, *args, **kwargs):
+    #     request.data['author'] = request.user
+    #     return super().create(request, *args, **kwargs)
+    #
+    # def put(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     if instance.author != request.user:
+    #         raise exceptions.PermissionDenied("Você não tem permissão para alterar este objeto.")
+    #
+    #     request.data['author'] = request.user
+    #     return self.update(request, *args, **kwargs)
 
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.author != request.user:
-            raise exceptions.PermissionDenied("Você não tem permissão para alterar este objeto.")
+    # def update(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     if instance.author != request.user:
+    #         raise exceptions.PermissionDenied("Você não tem permissão para alterar este objeto.")
+    #
+    #     request.data['author'] = request.user
+    #     return self.update(request, *args, **kwargs)
 
-        request.data['author'] = request.user
-        return self.update(request, *args, **kwargs)
 
-
-class RankUserViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet para gerenciar RankUser.
-    Suporta: GET, POST, PUT, PATCH, DELETE.
-    """
-    queryset = models.RankUser.objects.all()
-    serializer_class = serializers.RankUserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self):
-        """
-        Sobrescrevendo para buscar o objeto pelo ID na query ou body.
-        """
-        lookup_value = self.request.data.get('id') or self.request.query_params.get('id')
-        if not lookup_value:
-            raise exceptions.NotFound("Identificador não fornecido.")
-
-        obj = self.queryset.filter(id=lookup_value).first()
-        if not obj:
-            raise exceptions.NotFound(f"Objeto com id={lookup_value} não encontrado.")
-        return obj
-
-class RunkUserUpdateViewset(viewsets.ModelViewSet):
+class RankUserViewset(viewsets.ModelViewSet):
 
     queryset = models.RankUser.objects.all()
     serializer_class = serializers.RankUserSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self):
-        # Retorna o usuário autenticado
-        return self.request.user
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
-    # def get_object(self):
-    #     # Retorna o usuário autenticado
-    #     return self.request.user
+    def get_object(self):
+        # Retorna o usuário autenticado
+        return self.request.user
     #
     # def put(self, request, *args, **kwargs):
     #     return self.update(request, *args, **kwargs)

@@ -5,7 +5,7 @@ from api_astrobit import viewset
 router = DefaultRouter()
 router.register('users', viewset.CustomUserViewSet)
 router.register('game_cards', viewset.GameCardDataViewSet)
-router.register(r'rankusers', viewset.RunkUserUpdateViewset)
+router.register(r'rankusers', viewset.RankUserViewset)
 urlpatterns = router.urls
 
 urlpatterns = [
