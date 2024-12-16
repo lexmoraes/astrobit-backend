@@ -5,7 +5,7 @@ from api_astrobit import viewset
 router = DefaultRouter()
 router.register('users', viewset.CustomUserViewSet)
 router.register('game_cards', viewset.GameCardDataViewSet)
-router.register(r'rankusers', viewset.RankUserViewset)
+router.register('rankusers', viewset.RankUserViewset)
 urlpatterns = router.urls
 
 urlpatterns = [
@@ -20,8 +20,9 @@ urlpatterns = [
     # Solicita reset de senha via API
     path('confirmreset/', viewset.PasswordResetConfirmViewset.as_view(), name='reset_password_confirm'),
     # Confirma reset de senha via API
-    path('users/', viewset.CustomUserUpdateAPIViewset.as_view(), name='user_update'),
-
+    path('users/{id}/', viewset.CustomUserUpdateAPIViewset.as_view(), name='user_update'),
+    path('rankusers/{id}/', viewset.RankUserViewset.as_view({'get': 'list'}), name='rank_user_update'),
+    path('api/game_cards/{id}/', viewset.GameCardDataViewSet.as_view({'get': 'list'}), name='game_card_update')
 ]
 
 urlpatterns += router.urls

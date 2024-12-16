@@ -144,56 +144,60 @@ class GameCardDataViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filterset_class = filters.GameCardDataFilter
 
-    # def create(self, request, *args, **kwargs):
-    #     request.data['author'] = request.user
-    #     return super().create(request, *args, **kwargs)
-    #
-    # def put(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     if instance.author != request.user:
-    #         raise exceptions.PermissionDenied("Você não tem permissão para alterar este objeto.")
-    #
-    #     request.data['author'] = request.user
-    #     return self.update(request, *args, **kwargs)
+    def create(self, request, *args, **kwargs):
+        # Fazendo uma cópia mutável dos dados da requisição
+        mutable_data = request.data.copy()
 
-    # def update(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     if instance.author != request.user:
-    #         raise exceptions.PermissionDenied("Você não tem permissão para alterar este objeto.")
-    #
-    #     request.data['author'] = request.user
-    #     return self.update(request, *args, **kwargs)
+        # Modifique os dados conforme necessário
+        mutable_data['campo'] = 'valor_novo'
+
+        # Validação e salvamento dos dados
+        serializer = serializers.GameCardDataSerializer(data=mutable_data)
+        if serializer.is_valid():
+            serializer.save()
+            return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return response.Response(serializer.data)
+
+
 
 
 class RankUserViewset(viewsets.ModelViewSet):
-
     queryset = models.RankUser.objects.all()
     serializer_class = serializers.RankUserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
     def get_object(self):
-        # Retorna o usuário autenticado
-        return self.request.user
-    #
-    # def put(self, request, *args, **kwargs):
-    #     return self.update(request, *args, **kwargs)
-    #
-    # def get(self, request, *args, **kwargs):
-    #     queryset = self.get_queryset()
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return response.Response(serializer.data)
-    #
-    #
-    # def post(self, request, *args, **kwargs):
-    #     return self.create(request, *args, **kwargs)
-    #
-    # def update(self, request, *args, **kwargs):
-    #     partial = kwargs.pop('partial', False)
-    #     instance = self.get_object()
-    #     serializer = self.get_serializer(instance, data=request.data, partial=partial)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_update(serializer)
-    #     return response.Response(serializer.data)
+        """
+        Retorna o RankUser associado ao usuário autenticado.
+        """
+        return models.RankUser.objects.get(player=self.request.user)
+
+    def put(self, request, *args, **kwargs):
+        """
+        Atualiza o RankUser do usuário autenticado.
+        """
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=False)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return response.Response(serializer.data)
+
+    def perform_update(self, serializer):
+        """
+        Salva a atualização do RankUser.
+        """
+        serializer.save()
