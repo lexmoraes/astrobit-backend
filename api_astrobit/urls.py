@@ -22,7 +22,7 @@ urlpatterns = [
     # Confirma reset de senha via API
     path('users/{id}/', viewset.CustomUserUpdateAPIViewset.as_view(), name='user_update'),
     path('rankusers/{id}/', viewset.RankUserViewset.as_view({'get': 'list'}), name='rank_user_update'),
-    path('api/game_cards/{id}/', viewset.GameCardDataViewSet.as_view({'get': 'list'}), name='game_card_update')
+    path('game_cards/{id}/', viewset.GameCardDataViewSet.as_view({'get': 'list'}), name='game_card_update')
 ]
 
 urlpatterns += router.urls
