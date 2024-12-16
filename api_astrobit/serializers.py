@@ -61,6 +61,8 @@ class GameCardDataSerializer(serializers.ModelSerializer):
 
 
 class RankUserSerializer(serializers.ModelSerializer):
+
+    player = serializers.PrimaryKeyRelatedField(queryset=models.CustomUser.objects.all())  # Referência ao CustomUser
     class Meta:
         model = models.RankUser
         fields = ['id', 'player', 'score']

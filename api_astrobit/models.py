@@ -27,6 +27,10 @@ class ModelBase(models.Model):
         null=False,
     )
 
+    class Meta:
+        abstract = True
+        managed = True
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None, **extra_fields):
@@ -37,6 +41,10 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
+
+    # class Meta:
+    #     managed = True
+    #     # db_table = 'admin'
 
 
 class CustomUser(AbstractUser, ModelBase, PermissionsMixin):
@@ -66,19 +74,28 @@ class CustomUser(AbstractUser, ModelBase, PermissionsMixin):
     def __str__(self):
         return f"{self.username}"
 
+    # class Meta:
+    #     managed = True
+    #     # db_table = 'users'
+
 
 class RankUser(ModelBase):
-    player = models.ForeignKey(
+    player = models.OneToOneField(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name="rank_users"
     )
     score = models.PositiveIntegerField(
-        default=0
+        default=0,
+        blank=False,
+        null=False,
     )
 
     def __str__(self):
-        return f"{self.player.username} - {self.score}"
+        return f"{self.player} - {self.score}"
+
+    # class Meta:
+    #     managed = True
+    #     # db_table = ('rank')
 
 
 class GameCardData(ModelBase):
@@ -104,5 +121,15 @@ class GameCardData(ModelBase):
         help_text="Insira o link do jogo."
     )
 
+    is_active_game = models.BooleanField(
+        default=False,
+        null=False,
+        blank=False,
+    )
+
     def __str__(self):
         return f"{self.game_title} by {self.author}: {self.description} ({self.link})"
+
+    # class Meta:
+    #     managed = True
+    #     # db_table = 'game'
