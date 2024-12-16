@@ -68,17 +68,18 @@ class CustomUser(AbstractUser, ModelBase, PermissionsMixin):
 
 
 class RankUser(ModelBase):
-    player = models.ForeignKey(
+    player = models.OneToOneField(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name="rank_users"
     )
     score = models.PositiveIntegerField(
-        default=0
+        default=0,
+        blank=False,
+        null=False,
     )
 
     def __str__(self):
-        return f"{self.player.username} - {self.score}"
+        return f"{self.player} - {self.score}"
 
 
 class GameCardData(ModelBase):
@@ -102,6 +103,12 @@ class GameCardData(ModelBase):
         null=False,
         blank=False,
         help_text="Insira o link do jogo."
+    )
+
+    is_active_game = models.BooleanField(
+        default=False,
+        null=False,
+        blank=False,
     )
 
     def __str__(self):

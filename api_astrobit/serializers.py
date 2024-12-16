@@ -63,7 +63,7 @@ class GameCardDataSerializer(serializers.ModelSerializer):
 class RankUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.RankUser
-        fields = ['id', 'player', 'score']
+        fields = ['id', 'modified_at', 'player', 'score']
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
