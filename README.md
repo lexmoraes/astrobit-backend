@@ -1,6 +1,6 @@
 # api-astrobit  <img height="28" src="https://raw.githubusercontent.com/alexsandro-moraes/api-astrobit/refs/heads/alex-developer/bit.gif"/>
 
-Criação da API para os testes iniciais da plataforma website educativo Astrobit, projeto em desenvolvimento para a Mostratech, sendo a mostra tecnológica do segundo semestre do curso técnico de informática para web, na Escola Técnica da FPFtech [(Etech-FPFtech)](https://www.fpf-etech.com/).
+Criação da API para os testes iniciais da plataforma website educativo Astrobit, projeto desenvolvido para a XV Mostratech, sendo a mostra tecnológica do segundo semestre do curso técnico de informática para web, na Escola Técnica da FPFtech [(Etech-FPFtech)](https://www.fpf-etech.com/).
 A API possui athenticação JWT para usuários, garantindo confiabilidade e segurança.
 
 ### <img height="45" src="https://raw.githubusercontent.com/alexsandro-moraes/api-astrobit/refs/heads/alex-developer/senior.gif"/> Configurações iniciais:
