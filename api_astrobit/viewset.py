@@ -3,12 +3,10 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from rest_framework import viewsets, status, mixins
-from rest_framework import exceptions, generics, permissions, response, serializers
+from rest_framework import exceptions, generics, permissions, response, serializers, viewsets, status, mixins
 from rest_framework.views import APIView
 from rest_framework_simplejwt import views
 from rest_framework_simplejwt.tokens import RefreshToken
-
 from api_astrobit import serializers, models, filters
 
 
