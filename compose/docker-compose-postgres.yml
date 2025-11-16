@@ -1,0 +1,16 @@
+version: '3'
+services:
+
+  postgres:
+    image: postgres:17
+    hostname: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=astrobit
+      - POSTGRES_PASSWORD=123456
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

@@ -18,7 +18,7 @@ import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-dotenv_path = Path(__file__).resolve().parent.parent / 'api-astrobit.config'
+dotenv_path = Path(__file__).resolve().parent.parent / 'astrobit.config'
 load_dotenv(dotenv_path)
 
 # Quick-start development settings - unsuitable for production
@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    # "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'main_configurations.urls'
@@ -86,12 +86,22 @@ WSGI_APPLICATION = 'main_configurations.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+ENGINE = os.environ.get('DB_ENGINE')
+NAME = os.environ.get('DB_NAME')
+HOST = os.environ.get('DB_HOST')
+PORT = os.environ.get('DB_PORT')
+USER = os.environ.get('DB_USER')
+PASSWORD = os.environ.get('DB_PASS')
+
 DATABASES = {
-    'default': dj_database_url.config(
-        default="postgresql://postgres:GQxRPldCWCuLVcMpQQTicTfeNJxWuveS@autorack.proxy.rlwy.net:39930/railway",
-        conn_max_age=600,
-        ssl_require=not DEBUG
-    )
+    'default': {
+        'ENGINE': ENGINE,
+        'NAME': NAME,
+        'HOST': HOST,
+        'PORT': PORT,
+        'USER': USER,
+        'PASSWORD': PASSWORD
+    }
 }
 
 
@@ -186,7 +196,7 @@ AUTHENTICATION_BACKENDS = [
 AUTH_USER_MODEL = 'api_astrobit.CustomUser'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.seu_provedor.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'seu_email@dominio.com'
